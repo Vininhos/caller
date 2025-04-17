@@ -10,5 +10,5 @@ on:
 jobs:
   call-reusable:
     name: call reusable
-    uses: Vininhos/reusable/.github/workflows/reusable.yaml@main
+    uses: Vininhos/reusable/.github/workflows/reusable.yaml
     secrets: inherit
