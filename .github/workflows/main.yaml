@@ -8,3 +8,4 @@ jobs:
   call-reusable:
     name: call reusable
     uses: Vininhos/reusable/.github/workflows/action.yaml@main
+    secrets: inherit
