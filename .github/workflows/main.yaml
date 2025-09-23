@@ -10,7 +10,8 @@ jobs:
     steps:
     - name: artifact-generate
       run: |
-        echo "test" > test.txt
+        mkdir -p artifact-data
+        echo "test" > artifact-data/test.txt
       shell: bash
 
     - name: upload-artifact
