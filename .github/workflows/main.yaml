@@ -31,4 +31,4 @@ jobs:
     - name: display-artifacts
       run: |
         tree
-        ls -la artifacts
+        ls -la
