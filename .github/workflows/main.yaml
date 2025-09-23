@@ -18,7 +18,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: manager-generator
-        path: manager-data
+        path: artifact-data
 
   consume-artifact:
    needs: artifact-generator
@@ -27,7 +27,7 @@ jobs:
     - name: consume
       uses: actions/download-artifact@v5
       with:
-        pattern: manager-
+        pattern: manager-*
     - name: display-artifacts
       run: |
         tree
