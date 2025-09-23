@@ -18,7 +18,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: manager-generator
-        path: artifact-data
+        path: manager-data
 
   consume-artifact:
    needs: artifact-generator
