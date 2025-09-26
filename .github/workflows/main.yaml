@@ -1,14 +1,34 @@
 name: caller
 
 on:
-  push:
-    branches:
-      - "main"
   workflow_call:
   workflow_dispatch:
 
 jobs:
-  call-reusable:
-    name: call reusable
-    uses: Vininhos/reusable/.github/workflows/reusable.yaml@main
-    secrets: inherit
+  artifact-generator:
+    runs-on: ubuntu-latest
+    steps:
+    - name: artifact-generate
+      run: |
+        mkdir -p artifact-data
+        echo "test" > artifact-data/test.txt
+      shell: bash
+
+    - name: upload-artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: manager-generator
+        path: artifact-data
+
+  consume-artifact:
+   needs: artifact-generator
+   runs-on: ubuntu-latest
+   steps:
+    - name: consume
+      uses: actions/download-artifact@v5
+      with:
+        pattern: manager-*
+    - name: display-artifacts
+      run: |
+        tree
+        ls -la
