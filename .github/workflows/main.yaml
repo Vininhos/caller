@@ -1,53 +1,209 @@
-name: caller
-
+name: Artifact Demo
 on:
   workflow_dispatch:
+    inputs:
+      app-name:
+        required: true
+        type: string
+        description: "app-name"
+        default: "my-prefix"
 
 jobs:
   job-a:
-    name: Job A
+    name: Job A - Generate Artifact
     runs-on: ubuntu-latest
     steps:
-    - name: artifact-generate
-      run: |
-        mkdir -p artifact-data
-        echo "test" > artifact-data/test.txt
-      shell: bash
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: ${{ inputs.app-name }}-*
+          merge-multiple: true
 
-    - name: upload-artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: artifact-a
-        path: artifact-data
+      - name: Create test files
+        run: |
+          mkdir -p artifact-data
+          echo "This is file 1 from Job A" > artifact-data/file1.txt
+          echo "This is file 2 from Job A" > artifact-data/file2.txt
+          echo "Job A execution time: $(date +'%Y-%m-%d %H:%M:%S.%3N')" > artifact-data/job-a-info.txt
+          
+      - name: Log Upload Artifact Time
+        run: |
+          echo "Uploading artifacts for Job A at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-prefix-job-a
+          path: artifact-data
+          retention-days: 1
+          if-no-files-found: ignore
+          overwrite: true
 
   job-b:
-   name: Job B
-   needs: job-a
-   runs-on: ubuntu-latest
-   steps:
-    - name: download-artifact
-      uses: actions/download-artifact@v5
-      with:
-        name: artifact-a
-        path: artifact-data
+    name: Job B - Process Artifact
+    needs: job-a
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log start time
+        run: |
+          echo "Job B starts downloading artifacts at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
 
-    - name: display-artifacts
-      run: |
-        tree
-        ls -la
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: ${{ inputs.app-name }}-*
+          merge-multiple: true
+
+      - name: Log download completion time
+        run: |
+          echo "Completed download for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
+
+      - name: List downloaded files
+        run: |
+          echo "Files downloaded in Job B:"
+          ls -la
+          tree
+          echo "#============="
+          ls -la artifact-data/ || echo "Directory is empty or doesn't exist"
+
+      - name: Add Job B content
+        run: |
+          mkdir -p artifact-data
+          echo "This is a file added by Job B" > artifact-data/job-b-file.txt
+          echo "Job B processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-b-info.txt
+
+      - name: Log Upload Artifact Time
+        run: |
+          echo "Uploading artifacts for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-prefix-job-a
+          path: artifact-data
+          retention-days: 1
+          if-no-files-found: ignore
+          overwrite: true
+
+      - name: Log download completion time
+        run: |
+          echo "Completed upload for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
 
   job-c:
-   name: Job C
-   needs: job-a
-   runs-on: ubuntu-latest
-   steps:
-    - name: download-artifact
-      uses: actions/download-artifact@v5
-      with:
-        name: artifact-a
-        path: artifact-data
+    name: Job C - Process Artifact
+    needs: job-a
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log start time
+        run: |
+          echo "Job C starts downloading artifacts at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
 
-    - name: display-artifacts
-      run: |
-        tree
-        ls -la
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: ${{ inputs.app-name }}-*
+          merge-multiple: true
+
+      - name: Log download completion time
+        run: |
+          echo "Completed download for Job C at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
+
+      - name: List downloaded files
+        run: |
+          echo "Files downloaded in Job C:"
+          ls -la
+          tree
+          echo "#============="
+          ls -la artifact-data/ || echo "Directory is empty or doesn't exist"
+
+      - name: Add Job C content
+        run: |
+          mkdir -p artifact-data
+          echo "This is a file added by Job C" > artifact-data/job-c-file.txt
+          echo "Job C processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-c-info.txt
+
+      - name: Log Upload Artifact Time
+        run: |
+          echo "Uploading artifacts for Job C at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-prefix-job-a
+          path: artifact-data
+          retention-days: 1
+          if-no-files-found: ignore
+          overwrite: true
+
+      - name: Log upload completion time
+        run: |
+          echo "Completed upload for Job C at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
+
+  job-d:
+    name: Job D - Final Processing
+    needs: [job-b, job-c]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log start time for download
+        run: |
+          echo "Job D starts downloading final artifacts at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: ${{ inputs.app-name }}-*
+          merge-multiple: true
+
+      - name: Log final download completion time
+        run: |
+          echo "Completed final download at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
+
+      - name: Analyze final artifact content
+        run: |
+          echo "Final artifact contents:"
+          tree
+          echo "#========================================="
+          ls -la final-data/ || echo "Directory is empty or doesn't exist"
+          
+          if [ -d "final-data" ] && [ "$(ls -A final-data 2>/dev/null)" ]; then
+            echo ""
+            echo "Contents of files:"
+            cat final-data/*.txt || echo "No text files found"
+            
+            echo ""
+            echo "Checking for expected files..."
+            
+            # Verificar arquivos do Job A
+            if [ -f "final-data/file1.txt" ] && [ -f "final-data/file2.txt" ]; then
+              echo "✅ Job A files present"
+            else
+              echo "❌ Job A files missing"
+            fi
+            
+            # Verificar arquivo do Job B
+            if [ -f "final-data/job-b-file.txt" ]; then
+              echo "✅ Job B file present"
+            else
+              echo "❌ Job B file missing"
+            fi
+            
+            # Verificar arquivo do Job C
+            if [ -f "final-data/job-c-file.txt" ]; then
+              echo "✅ Job C file present"
+            else
+              echo "❌ Job C file missing"
+            fi
+          else
+            echo "::warning::No files to analyze"
+          fi
