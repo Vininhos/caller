@@ -12,6 +12,7 @@ jobs:
       run: |
         mkdir -p artifact-data
         echo "test" > artifact-data/test.txt
+        echo "Job A - Artifact criado em: $(date '+%Y-%m-%d %H:%M:%S.%3N %Z') (UTC: $(date -u '+%Y-%m-%d %H:%M:%S.%3N'))"
       shell: bash
 
     - name: upload-artifact
@@ -20,34 +21,121 @@ jobs:
         name: artifact-a
         path: artifact-data
 
+    - name: upload-confirmation
+      run: |
+        echo "Job A - Upload concluído em: $(date '+%Y-%m-%d %H:%M:%S.%3N %Z') (UTC: $(date -u '+%Y-%m-%d %H:%M:%S.%3N'))"
+        echo "Job A - Runner: $RUNNER_NAME"
+        echo "Job A - GitHub Run ID: $GITHUB_RUN_ID"
+        echo "Job A - GitHub Run Number: $GITHUB_RUN_NUMBER"
+
   job-b:
    name: Job B
    needs: job-a
    runs-on: ubuntu-latest
    steps:
+    - name: pre-download-info
+      run: |
+        echo "================================================"
+        echo "JOB B - INICIANDO DOWNLOAD"
+        echo "================================================"
+        echo "Job B - Horário de início do download: $(date '+%Y-%m-%d %H:%M:%S.%3N %Z')"
+        echo "Job B - UTC: $(date -u '+%Y-%m-%d %H:%M:%S.%3N')"
+        echo "Job B - Timestamp Unix (ms): $(($(date +%s%N)/1000000))"
+        echo "Job B - Runner: $RUNNER_NAME"
+        echo "Job B - GitHub Run ID: $GITHUB_RUN_ID"
+        echo "Job B - Artifact procurado: artifact-a"
+        echo "Job B - PID do processo: $$"
+        echo "================================================"
+
     - name: download-artifact
       uses: actions/download-artifact@v5
       with:
         name: artifact-a
         path: artifact-data
 
+    - name: post-download-info
+      run: |
+        echo "================================================"
+        echo "JOB B - DOWNLOAD CONCLUÍDO"
+        echo "================================================"
+        echo "Job B - Horário de fim do download: $(date '+%Y-%m-%d %H:%M:%S.%3N %Z')"
+        echo "Job B - UTC: $(date -u '+%Y-%m-%d %H:%M:%S.%3N')"
+        echo "Job B - Timestamp Unix (ms): $(($(date +%s%N)/1000000))"
+        echo "Job B - Status do download: SUCESSO"
+        echo "Job B - Runner: $RUNNER_NAME"
+        echo "================================================"
+
     - name: display-artifacts
       run: |
-        tree
+        echo "Job B - Verificando conteúdo baixado:"
+        echo "Estrutura de diretórios:"
+        tree || find . -type f -exec ls -la {} \;
+        echo ""
+        echo "Listagem detalhada:"
         ls -la
+        echo ""
+        echo "Conteúdo do arquivo (se existir):"
+        if [ -f "artifact-data/test.txt" ]; then
+          echo "Arquivo encontrado! Conteúdo:"
+          cat artifact-data/test.txt
+          echo "Tamanho do arquivo: $(stat -c%s artifact-data/test.txt) bytes"
+          echo "Última modificação: $(stat -c%y artifact-data/test.txt)"
+        else
+          echo "ERRO: Arquivo artifact-data/test.txt não encontrado!"
+        fi
 
   job-c:
    name: Job C
    needs: job-a
    runs-on: ubuntu-latest
    steps:
+    - name: pre-download-info
+      run: |
+        echo "================================================"
+        echo "JOB C - INICIANDO DOWNLOAD"
+        echo "================================================"
+        echo "Job C - Horário de início do download: $(date '+%Y-%m-%d %H:%M:%S.%3N %Z')"
+        echo "Job C - UTC: $(date -u '+%Y-%m-%d %H:%M:%S.%3N')"
+        echo "Job C - Timestamp Unix (ms): $(($(date +%s%N)/1000000))"
+        echo "Job C - Runner: $RUNNER_NAME"
+        echo "Job C - GitHub Run ID: $GITHUB_RUN_ID"
+        echo "Job C - Artifact procurado: artifact-a"
+        echo "Job C - PID do processo: $$"
+        echo "================================================"
+
     - name: download-artifact
       uses: actions/download-artifact@v5
       with:
         name: artifact-a
         path: artifact-data
 
+    - name: post-download-info
+      run: |
+        echo "================================================"
+        echo "JOB C - DOWNLOAD CONCLUÍDO"
+        echo "================================================"
+        echo "Job C - Horário de fim do download: $(date '+%Y-%m-%d %H:%M:%S.%3N %Z')"
+        echo "Job C - UTC: $(date -u '+%Y-%m-%d %H:%M:%S.%3N')"
+        echo "Job C - Timestamp Unix (ms): $(($(date +%s%N)/1000000))"
+        echo "Job C - Status do download: SUCESSO"
+        echo "Job C - Runner: $RUNNER_NAME"
+        echo "================================================"
+
     - name: display-artifacts
       run: |
-        tree
+        echo "Job C - Verificando conteúdo baixado:"
+        echo "Estrutura de diretórios:"
+        tree || find . -type f -exec ls -la {} \;
+        echo ""
+        echo "Listagem detalhada:"
         ls -la
+        echo ""
+        echo "Conteúdo do arquivo (se existir):"
+        if [ -f "artifact-data/test.txt" ]; then
+          echo "Arquivo encontrado! Conteúdo:"
+          cat artifact-data/test.txt
+          echo "Tamanho do arquivo: $(stat -c%s artifact-data/test.txt) bytes"
+          echo "Última modificação: $(stat -c%y artifact-data/test.txt)"
+        else
+          echo "ERRO: Arquivo artifact-data/test.txt não encontrado!"
+        fi
