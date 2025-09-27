@@ -1,11 +1,11 @@
 name: caller
 
 on:
-  workflow_call:
   workflow_dispatch:
 
 jobs:
-  artifact-generator:
+  job-a:
+    name: Job A
     runs-on: ubuntu-latest
     steps:
     - name: artifact-generate
@@ -17,17 +17,36 @@ jobs:
     - name: upload-artifact
       uses: actions/upload-artifact@v4
       with:
-        name: manager-generator
+        name: artifact-a
         path: artifact-data
 
-  consume-artifact:
-   needs: artifact-generator
+  job-b:
+   name: Job B
+   needs: job-a
    runs-on: ubuntu-latest
    steps:
-    - name: consume
+    - name: download-artifact
       uses: actions/download-artifact@v5
       with:
-        pattern: manager-*
+        name: artifact-a
+        path: artifact-data
+
+    - name: display-artifacts
+      run: |
+        tree
+        ls -la
+
+  job-c:
+   name: Job C
+   needs: job-a
+   runs-on: ubuntu-latest
+   steps:
+    - name: download-artifact
+      uses: actions/download-artifact@v5
+      with:
+        name: artifact-a
+        path: artifact-data
+
     - name: display-artifacts
       run: |
         tree
