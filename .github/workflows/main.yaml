@@ -101,7 +101,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: my-prefix-job-a
+        name: artifact-a
         path: artifact-data
         retention-days: 1
         if-no-files-found: ignore
@@ -183,7 +183,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: artifact-job-a
+        name: artifact-a
         path: artifact-data
         retention-days: 1
         if-no-files-found: ignore
