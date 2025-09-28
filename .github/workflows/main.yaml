@@ -14,6 +14,7 @@ jobs:
         echo "test" > artifact-data/test.txt
         echo "Job A - Artifact criado em: $(date '+%Y-%m-%d %H:%M:%S.%3N %Z') (UTC: $(date -u '+%Y-%m-%d %H:%M:%S.%3N'))"
       shell: bash
+      if: always()
 
     - name: upload-artifact
       uses: actions/upload-artifact@v4
@@ -27,6 +28,7 @@ jobs:
         echo "Job A - Runner: $RUNNER_NAME"
         echo "Job A - GitHub Run ID: $GITHUB_RUN_ID"
         echo "Job A - GitHub Run Number: $GITHUB_RUN_NUMBER"
+      if: always()
 
   job-b:
    name: Job B
@@ -46,6 +48,7 @@ jobs:
         echo "Job B - Artifact procurado: artifact-a"
         echo "Job B - PID do processo: $$"
         echo "================================================"
+      if: always()
 
     - name: download-artifact
       uses: actions/download-artifact@v5
@@ -64,6 +67,7 @@ jobs:
         echo "Job B - Status do download: SUCESSO"
         echo "Job B - Runner: $RUNNER_NAME"
         echo "================================================"
+      if: always()
 
     - name: display-artifacts
       run: |
@@ -83,6 +87,30 @@ jobs:
         else
           echo "ERRO: Arquivo artifact-data/test.txt não encontrado!"
         fi
+    - name: Add Job B content
+      run: |
+        mkdir -p artifact-data
+          echo "This is a file added by Job B" > artifact-data/job-b-file.txt
+          echo "Job B processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-b-info.txt
+
+    - name: Log Upload Artifact Time
+      run: |
+        echo "Uploading artifacts for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+      if: always()
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: my-prefix-job-a
+        path: artifact-data
+        retention-days: 1
+        if-no-files-found: ignore
+        overwrite: true
+
+    - name: Log upload completion time
+      run: |
+        echo "Completed upload for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
 
   job-c:
    name: Job C
@@ -102,6 +130,7 @@ jobs:
         echo "Job C - Artifact procurado: artifact-a"
         echo "Job C - PID do processo: $$"
         echo "================================================"
+      if: always()
 
     - name: download-artifact
       uses: actions/download-artifact@v5
@@ -120,6 +149,7 @@ jobs:
         echo "Job C - Status do download: SUCESSO"
         echo "Job C - Runner: $RUNNER_NAME"
         echo "================================================"
+      if: always()
 
     - name: display-artifacts
       run: |
@@ -139,3 +169,27 @@ jobs:
         else
           echo "ERRO: Arquivo artifact-data/test.txt não encontrado!"
         fi
+    - name: Add Job C content
+      run: |
+        mkdir -p artifact-data
+          echo "This is a file added by Job C" > artifact-data/job-c-file.txt
+          echo "Job C processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-c-info.txt
+
+    - name: Log Upload Artifact Time
+      run: |
+        echo "Uploading artifacts for Job C at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+      if: always()
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifact-job-a
+        path: artifact-data
+        retention-days: 1
+        if-no-files-found: ignore
+        overwrite: true
+
+    - name: Log upload completion time
+      run: |
+        echo "Completed upload for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+        if: always()
