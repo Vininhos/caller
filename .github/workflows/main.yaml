@@ -148,25 +148,6 @@ jobs:
          echo "This is a file added by Job B" > artifact-data/job-b-file.txt
          echo "Job B processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-b-info.txt
 
-    - name: Log Upload Artifact Time
-      run: |
-        echo "Uploading artifacts for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
-      if: always()
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: artifact-a
-        path: artifact-data
-        retention-days: 1
-        if-no-files-found: ignore
-        overwrite: true
-
-    - name: Log upload completion time
-      run: |
-        echo "Completed upload for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
-      if: always()
-
   job-c:
    name: Job C
    needs: job-a
@@ -279,27 +260,3 @@ jobs:
         echo "Job C - Hash MD5 de todos os arquivos no diretório:"
         find artifact-data -type f -exec md5sum {} \; 2>/dev/null || echo "Nenhum arquivo encontrado para hash"
 
-    - name: Add Job C content
-      run: |
-        mkdir -p artifact-data
-         echo "This is a file added by Job C" > artifact-data/job-c-file.txt
-         echo "Job C processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-c-info.txt
-
-    - name: Log Upload Artifact Time
-      run: |
-        echo "Uploading artifacts for Job C at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
-      if: always()
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: artifact-a
-        path: artifact-data
-        retention-days: 1
-        if-no-files-found: ignore
-        overwrite: true
-
-    - name: Log upload completion time
-      run: |
-        echo "Completed upload for Job C at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
-      if: always()
