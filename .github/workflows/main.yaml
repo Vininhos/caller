@@ -110,7 +110,7 @@ jobs:
     - name: Log upload completion time
       run: |
         echo "Completed upload for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
-        if: always()
+      if: always()
 
   job-c:
    name: Job C
@@ -191,5 +191,5 @@ jobs:
 
     - name: Log upload completion time
       run: |
-        echo "Completed upload for Job B at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
-        if: always()
+        echo "Completed upload for Job C at: $(date +'%Y-%m-%d %H:%M:%S.%3N')"
+      if: always()
