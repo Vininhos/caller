@@ -145,8 +145,8 @@ jobs:
     - name: Add Job B content
       run: |
         mkdir -p artifact-data
-          echo "This is a file added by Job B" > artifact-data/job-b-file.txt
-          echo "Job B processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-b-info.txt
+         echo "This is a file added by Job B" > artifact-data/job-b-file.txt
+         echo "Job B processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-b-info.txt
 
     - name: Log Upload Artifact Time
       run: |
@@ -282,8 +282,8 @@ jobs:
     - name: Add Job C content
       run: |
         mkdir -p artifact-data
-          echo "This is a file added by Job C" > artifact-data/job-c-file.txt
-          echo "Job C processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-c-info.txt
+         echo "This is a file added by Job C" > artifact-data/job-c-file.txt
+         echo "Job C processed this artifact at: $(date +'%Y-%m-%d %H:%M:%S.%3N')" >> artifact-data/job-c-info.txt
 
     - name: Log Upload Artifact Time
       run: |
