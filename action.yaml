@@ -1,0 +1,9 @@
+name: composite-action
+description: greet the user
+
+runs:
+  using: composite
+  steps:
+    - name: greet
+      run: ${GITHUB_ACTION_PATH}/scripts/run.sh
+      shell: bash
